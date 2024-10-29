@@ -885,6 +885,19 @@ jobs:
         fi
         os="${{ matrix.os }}"
         cmake --build . --target check-cppinterop --parallel ${{ env.ncpus }} -- VERBOSE=1
+
+        # Check the contents of the link.txt file
+        echo "Checking link.txt for clangInterpreter linking:"
+        cat CMakeFiles/clangCppInterOp.dir/link.txt
+    
+        # Check the resulting .so file for linked symbols (using nm and otool on macOS)
+        if [[ ("${os}" == "macos"*) ]]; then
+          echo "Checking symbols in libclangCppInterOp.dylib:"
+          otool -L lib/libclangCppInterOp.dylib
+        else
+          echo "Checking symbols in libclangCppInterOp.so:"
+          nm -C lib/libclangCppInterOp.so
+        fi
         if [[ ("${os}" == "ubuntu"*) ]]; then
           valgrind --show-error-list=yes --track-origins=yes --error-exitcode=1 unittests/CppInterOp/CppInterOpTests
         fi
