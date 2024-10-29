@@ -884,7 +884,7 @@ jobs:
                 ../
         fi
         os="${{ matrix.os }}"
-        cmake --build . --target check-cppinterop --parallel ${{ env.ncpus }}
+        cmake --build . --target check-cppinterop --parallel ${{ env.ncpus }} -- VERBOSE=1
         if [[ ("${os}" == "ubuntu"*) ]]; then
           valgrind --show-error-list=yes --track-origins=yes --error-exitcode=1 unittests/CppInterOp/CppInterOpTests
         fi
@@ -1344,7 +1344,7 @@ jobs:
                 ../
         fi
         
-        EMCC_CFLAGS='-sERROR_ON_UNDEFINED_SYMBOLS=0' emmake make -j ${{ env.ncpus }}
+        EMCC_CFLAGS='-sERROR_ON_UNDEFINED_SYMBOLS=0' emmake make -j ${{ env.ncpus }} VERBOSE=1
 
         cd ..
         
@@ -1376,4 +1376,4 @@ jobs:
           -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ON            \
           -DCppInterOp_DIR="${{ env.CPPINTEROP_BUILD_DIR }}/lib/cmake/CppInterOp"  \
           ..
-        EMCC_CFLAGS='-sERROR_ON_UNDEFINED_SYMBOLS=0' emmake make -j ${{ env.ncpus }}
+        EMCC_CFLAGS='-sERROR_ON_UNDEFINED_SYMBOLS=0' emmake make -j ${{ env.ncpus }} VERBOSE=1
