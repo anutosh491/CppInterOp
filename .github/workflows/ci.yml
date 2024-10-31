@@ -887,8 +887,8 @@ jobs:
         cmake --build . --target check-cppinterop --parallel ${{ env.ncpus }} -- VERBOSE=1
 
         # Check the contents of the link.txt file
-        echo "Checking link.txt for clangInterpreter linking:"
-        cat CMakeFiles/clangCppInterOp.dir/link.txt
+        #echo "Checking link.txt for clangInterpreter linking:"
+        #cat CMakeFiles/clangCppInterOp.dir/link.txt
     
         # Check the resulting .so file for linked symbols (using nm and otool on macOS)
         if [[ ("${os}" == "macos"*) ]]; then
