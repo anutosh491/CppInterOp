@@ -129,6 +129,8 @@ if( CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
 
   message(STATUS "Found supported version: LLVM ${LLVM_PACKAGE_VERSION}")
   message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+  message(STATUS "Found supported version: LLD ${LLD_PACKAGE_VERSION}")
+  message(STATUS "Using LLDConfig.cmake in: ${LLD_DIR}")
 
   ## Find supported Clang
 
