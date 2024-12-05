@@ -27,24 +27,32 @@ jobs:
             clang-runtime: '19'
             cling: Off
             cppyy: On
+            llvm_enable_projects: "clang;lld"
+            llvm_targets_to_build: "WebAssembly;host;NVPTX"
           - name: ubu22-x86-gcc12-clang-repl-18
             os: ubuntu-22.04
             compiler: gcc-12
             clang-runtime: '18'
             cling: Off
             cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
           - name: ubu22-x86-gcc12-clang-repl-17
             os: ubuntu-22.04
             compiler: gcc-12
             clang-runtime: '17'
             cling: Off
             cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
           - name: ubu22-x86-gcc12-clang-repl-16
             os: ubuntu-22.04
             compiler: gcc-12
             clang-runtime: '16'
             cling: Off
             cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
           - name: ubu22-x86-gcc9-clang13-cling
             os: ubuntu-22.04
             compiler: gcc-9
@@ -52,48 +60,64 @@ jobs:
             cling: On
             cling-version: '1.0'
             cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
           - name: win2022-msvc-clang-repl-19
             os: windows-2022
             compiler: msvc
             clang-runtime: '19'
             cling: Off
             cppyy: Off
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
           - name: win2022-msvc-clang-repl-18
             os: windows-2022
             compiler: msvc
             clang-runtime: '18'
             cling: Off
             cppyy: Off
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
           - name: win2022-msvc-clang-repl-17
             os: windows-2022
             compiler: msvc
             clang-runtime: '17'
             cling: Off
             cppyy: Off
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
           - name: osx14-arm-clang-clang-repl-19
             os: macos-14
             compiler: clang
             clang-runtime: '19'
             cling: Off
             cppyy: On
+            llvm_enable_projects: "clang;lld"
+            llvm_targets_to_build: "WebAssembly;host;NVPTX"
           - name: osx14-arm-clang-clang-repl-18
             os: macos-14
             compiler: clang
             clang-runtime: '18'
             cling: Off
             cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
           - name: osx14-arm-clang-clang-repl-17
             os: macos-14
             compiler: clang
             clang-runtime: '17'
             cling: Off
             cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
           - name: osx14-arm-clang-clang-repl-16
             os: macos-14
             compiler: clang
             clang-runtime: '16'
             cling: Off
             cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
           - name: osx14-arm-clang-clang13-cling
             os: macos-14
             compiler: clang
@@ -101,30 +125,40 @@ jobs:
             cling: On
             cling-version: '1.0'
             cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
           - name: osx13-x86-clang-clang-repl-19
             os: macos-13
             compiler: clang
             clang-runtime: '19'
             cling: Off
             cppyy: On
+            llvm_enable_projects: "clang;lld"
+            llvm_targets_to_build: "WebAssembly;host;NVPTX"
           - name: osx13-x86-clang-clang-repl-18
             os: macos-13
             compiler: clang
             clang-runtime: '18'
             cling: Off
             cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
           - name: osx13-x86-clang-clang-repl-17
             os: macos-13
             compiler: clang
             clang-runtime: '17'
             cling: Off
             cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
           - name: osx13-x86-clang-clang-repl-16
             os: macos-13
             compiler: clang
             clang-runtime: '16'
             cling: Off
             cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
           - name: osx13-x86-clang-clang13-cling
             os: macos-13
             compiler: clang
@@ -132,6 +166,8 @@ jobs:
             cling: On
             cling-version: '1.0'
             cppyy: On
+            llvm_enable_projects: "clang"
+            llvm_targets_to_build: "host;NVPTX"
             
     steps:
     - uses: actions/checkout@v4
@@ -319,6 +355,7 @@ jobs:
           brew unlink "$pkg"
           brew link --overwrite "$pkg"
         done
+        brew upgrade openssl >/dev/null 2>&1 
         brew upgrade
 
     - name: Build LLVM/Cling on Unix systems if the cache is invalid
@@ -339,10 +376,10 @@ jobs:
         mkdir build
         if [[ "${cling_on}" == "ON" ]]; then
           cd build
-          cmake -DLLVM_ENABLE_PROJECTS="clang;lld"               \
+          cmake -DLLVM_ENABLE_PROJECTS="${{ matrix.llvm_enable_projects }}" \
                 -DLLVM_EXTERNAL_PROJECTS=cling                     \
                 -DLLVM_EXTERNAL_CLING_SOURCE_DIR=../../cling       \
-                -DLLVM_TARGETS_TO_BUILD="WebAssembly;host;NVPTX"   \
+                -DLLVM_TARGETS_TO_BUILD="${{ matrix.llvm_targets_to_build }}" \
                 -DCMAKE_BUILD_TYPE=Release                         \
                 -DLLVM_ENABLE_ASSERTIONS=ON                        \
                 -DCLANG_ENABLE_STATIC_ANALYZER=OFF                 \
@@ -353,7 +390,6 @@ jobs:
                 -DLLVM_ENABLE_TERMINFO=OFF                         \
                 -DLLVM_ENABLE_LIBXML2=OFF                          \
                 ../llvm
-          cmake --build . --target lld --parallel ${{ env.ncpus }}
           cmake --build . --target clang --parallel ${{ env.ncpus }}
           cmake --build . --target cling --parallel ${{ env.ncpus }}
           # Now build gtest.a and gtest_main for CppInterOp to run its tests.
@@ -366,8 +402,8 @@ jobs:
             echo "Apply clang${{ matrix.clang-runtime }}-*.patch patches:"
           fi
           cd build
-          cmake -DLLVM_ENABLE_PROJECTS="clang;lld"                  \
-                -DLLVM_TARGETS_TO_BUILD="WebAssembly;host;NVPTX"    \
+          cmake -DLLVM_ENABLE_PROJECTS="${{ matrix.llvm_enable_projects}}" \
+                -DLLVM_TARGETS_TO_BUILD="${{ matrix.llvm_targets_to_build }}"  \
                 -DCMAKE_BUILD_TYPE=Release                          \
                 -DLLVM_ENABLE_ASSERTIONS=ON                         \
                 -DCLANG_ENABLE_STATIC_ANALYZER=OFF                  \
@@ -378,7 +414,11 @@ jobs:
                 -DLLVM_ENABLE_TERMINFO=OFF                          \
                 -DLLVM_ENABLE_LIBXML2=OFF                           \
                 ../llvm
-          cmake --build . --target clang clang-repl lld --parallel ${{ env.ncpus }}
+          if [[ "${llvm_vers}" == "16" ]]||[[ "${llvm_vers}" == "17" ]]||[[ "${llvm_vers}" == "18" ]]; then
+            cmake --build . --target clang clang-repl --parallel ${{ env.ncpus }}
+          else
+            cmake --build . --target clang clang-repl lld --parallel ${{ env.ncpus }}
+          fi
         fi
         cd ../
         rm -rf $(find . -maxdepth 1 ! -name "build" ! -name "llvm" ! -name "clang" ! -name ".")
@@ -410,10 +450,10 @@ jobs:
         if ( "${{ matrix.cling }}" -imatch "On" )
         {
           cd build
-          cmake -DLLVM_ENABLE_PROJECTS="clang"                  `
+          cmake -DLLVM_ENABLE_PROJECTS="${{ matrix.llvm_enable_projects}}" `
                 -DLLVM_EXTERNAL_PROJECTS=cling                `
                 -DLLVM_EXTERNAL_CLING_SOURCE_DIR="$env:CLING_DIR"   `
-                -DLLVM_TARGETS_TO_BUILD="host;NVPTX"          `
+                -DLLVM_TARGETS_TO_BUILD="${{ matrix.llvm_targets_to_build }}" `
                 -DCMAKE_BUILD_TYPE=Release                         `
                 -DLLVM_ENABLE_ASSERTIONS=ON                        `
                 -DCLANG_ENABLE_STATIC_ANALYZER=OFF                 `
@@ -445,8 +485,8 @@ jobs:
           }
           cd build
           echo "Apply clang${{ matrix.clang-runtime }}-*.patch patches:"
-          cmake -DLLVM_ENABLE_PROJECTS="clang"                   `
-                -DLLVM_TARGETS_TO_BUILD="host;NVPTX"          `
+          cmake -DLLVM_ENABLE_PROJECTS="${{ matrix.llvm_enable_projects}}"                   `
+                -DLLVM_TARGETS_TO_BUILD="${{ matrix.llvm_targets_to_build }}"          `
                 -DCMAKE_BUILD_TYPE=Release                          `
                 -DLLVM_ENABLE_ASSERTIONS=ON                         `
                 -DCLANG_ENABLE_STATIC_ANALYZER=OFF                  `
@@ -480,6 +520,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - name: ubu22-x86-gcc12-clang-repl-19-docs
+            os: ubuntu-22.04
+            compiler: gcc-12
+            clang-runtime: '19'
+            cling: Off
+            cppyy: Off
+            documentation: On
           - name: ubu22-x86-gcc12-clang-repl-19-cppyy
             os: ubuntu-22.04
             compiler: gcc-12
@@ -753,7 +800,7 @@ jobs:
       run: |
         # Install deps
         sudo apt-get update
-        sudo apt-get install git g++ debhelper devscripts gnupg python3
+        sudo apt-get install git g++ debhelper devscripts gnupg python3 doxygen graphviz python3-sphinx
         sudo apt-get install -y libc6-dbg
         sudo snap install valgrind --classic
         sudo apt autoremove
@@ -765,7 +812,7 @@ jobs:
     - name: Install deps on MacOS
       if: runner.os == 'macOS'
       run: |
-        brew update
+        brew update --force 
         brew remove ruby@3.0
         export ARCHITECHURE=$(uname -m)
         if [[ "$ARCHITECHURE" == "x86_64" ]]; then
@@ -778,7 +825,7 @@ jobs:
           brew unlink "$pkg"
           brew link --overwrite "$pkg"
         done
-        brew upgrade
+        brew upgrade --force 
         brew install eigen
         brew install boost
         pip install distro pytest
@@ -825,6 +872,7 @@ jobs:
           cmake -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}        \
                 -DUSE_CLING=ON                                  \
                 -DUSE_REPL=OFF                                  \
+                -DCPPINTEROP_INCLUDE_DOCS=${{ matrix.documentation }} \
                 -DCling_DIR=$LLVM_BUILD_DIR/tools/cling         \
                 -DLLVM_DIR=$LLVM_BUILD_DIR/lib/cmake/llvm       \
                 -DClang_DIR=$LLVM_BUILD_DIR/lib/cmake/clang     \
@@ -834,21 +882,27 @@ jobs:
                 -DLLVM_ENABLE_WERROR=On                         \
                 ../
         else
-          cmake -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}    \
-                -DUSE_CLING=OFF                             \
-                -DUSE_REPL=ON                               \
-                -DLLVM_DIR=$LLVM_BUILD_DIR/lib/cmake/llvm   \
-                -DClang_DIR=$LLVM_BUILD_DIR/lib/cmake/clang \
-                -DBUILD_SHARED_LIBS=ON                      \
-                -DCODE_COVERAGE=${{ env.CODE_COVERAGE }}    \
-                -DCMAKE_INSTALL_PREFIX=$CPPINTEROP_DIR      \
-                -DLLVM_ENABLE_WERROR=On                     \
+          cmake -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}     \
+                -DUSE_CLING=OFF                              \
+                -DUSE_REPL=ON                                \
+                -DCPPINTEROP_INCLUDE_DOCS=${{ matrix.documentation }} \
+                -DLLVM_DIR=$LLVM_BUILD_DIR/lib/cmake/llvm    \
+                -DClang_DIR=$LLVM_BUILD_DIR/lib/cmake/clang  \
+                -DBUILD_SHARED_LIBS=ON                       \
+                -DCODE_COVERAGE=${{ env.CODE_COVERAGE }}     \
+                -DCMAKE_INSTALL_PREFIX=$CPPINTEROP_DIR       \
+                -DLLVM_ENABLE_WERROR=On                      \
                 ../
         fi
         os="${{ matrix.os }}"
-        cmake --build . --target check-cppinterop --parallel ${{ env.ncpus }}
-        if [[ ("${os}" == "ubuntu"*) ]]; then
-          valgrind --show-error-list=yes --track-origins=yes --error-exitcode=1 unittests/CppInterOp/CppInterOpTests
+        docs_on=$(echo "${{ matrix.documentation }}" | tr '[:lower:]' '[:upper:]')
+        if [[ "${docs_on}" == "ON" ]]; then
+          cmake --build . --target doxygen-cppinterop --parallel ${{ env.ncpus }}
+        else
+          cmake --build . --target check-cppinterop --parallel ${{ env.ncpus }}
+          if [[ ("${os}" == "ubuntu"*) ]]; then
+            valgrind --show-error-list=yes --track-origins=yes --error-exitcode=1 unittests/CppInterOp/CppInterOpTests
+          fi
         fi
         cd ..
         # We need CB_PYTHON_DIR later
@@ -1093,93 +1147,21 @@ jobs:
             clang-runtime: '19'
             cling: Off
             micromamba_shell_init: bash
-          - name: ubu22-x86-gcc12-clang-repl-18-emscripten_wasm
-            os: ubuntu-22.04
-            compiler: gcc-12
-            clang-runtime: '18'
-            cling: Off
-            micromamba_shell_init: bash
-          - name: ubu22-x86-gcc12-clang-repl-17-emscripten_wasm
-            os: ubuntu-22.04
-            compiler: gcc-12
-            clang-runtime: '17'
-            cling: Off
-            micromamba_shell_init: bash
-          - name: ubu22-x86-gcc12-clang-repl-16-emscripten_wasm
-            os: ubuntu-22.04
-            compiler: gcc-12
-            clang-runtime: '16'
-            cling: Off
-            micromamba_shell_init: bash
-          - name: ubu22-x86-gcc9-clang13-cling-emscripten_wasm
-            os: ubuntu-22.04
-            compiler: gcc-9
-            clang-runtime: '13'
-            cling: On
-            cling-version: '1.0'
-            micromamba_shell_init: bash
+            emsdk_ver: "3.1.45"
           - name: osx14-arm-clang-clang-repl-19-emscripten_wasm
             os: macos-14
             compiler: clang
             clang-runtime: '19'
             cling: Off
             micromamba_shell_init: bash
-          - name: osx14-arm-clang-clang-repl-18-emscripten_wasm
-            os: macos-14
-            compiler: clang
-            clang-runtime: '18'
-            cling: Off
-            micromamba_shell_init: bash
-          - name: osx14-arm-clang-clang-repl-17-emscripten_wasm
-            os: macos-14
-            compiler: clang
-            clang-runtime: '17'
-            cling: Off
-            micromamba_shell_init: bash
-          - name: osx14-arm-clang-clang-repl-16-emscripten_wasm
-            os: macos-14
-            compiler: clang
-            clang-runtime: '16'
-            cling: Off
-            micromamba_shell_init: bash  
-          - name: osx14-arm-clang-clang13-cling-emscripten_wasm
-            os: macos-14
-            compiler: clang
-            clang-runtime: '13'
-            cling: On
-            cling-version: '1.0'
-            micromamba_shell_init: bash
+            emsdk_ver: "3.1.45"
           - name: osx13-x86-clang-clang-repl-19-emscripten_wasm
             os: macos-13
             compiler: clang
             clang-runtime: '19'
             cling: Off
             micromamba_shell_init: bash
-          - name: osx13-x86-clang-clang-repl-18-emscripten_wasm
-            os: macos-13
-            compiler: clang
-            clang-runtime: '18'
-            cling: Off
-            micromamba_shell_init: bash
-          - name: osx13-x86-clang-clang-repl-17-emscripten_wasm
-            os: macos-13
-            compiler: clang
-            clang-runtime: '17'
-            cling: Off
-            micromamba_shell_init: bash
-          - name: osx13-x86-clang-clang-repl-16-emscripten_wasm
-            os: macos-13
-            compiler: clang
-            clang-runtime: '16'
-            cling: Off
-            micromamba_shell_init: bash
-          - name: osx13-x86-clang-clang13-cling-emscripten_wasm
-            os: macos-13
-            compiler: clang
-            clang-runtime: '13'
-            cling: On
-            cling-version: '1.0'
-            micromamba_shell_init: bash
+            emsdk_ver: "3.1.45"
 
     steps:
     - uses: actions/checkout@v4
@@ -1235,7 +1217,9 @@ jobs:
     - name: Setup emsdk
       shell: bash -l {0}
       run: |
-        emsdk install 3.1.45     
+          git clone https://github.com/emscripten-core/emsdk.git
+          cd emsdk
+          ./emsdk install  ${{ matrix.emsdk_ver }}
 
     - name: Restore Cache LLVM/Clang runtime build directory
       uses: actions/cache/restore@v4
@@ -1250,11 +1234,10 @@ jobs:
       if: ${{ runner.os != 'windows' }}
       shell: bash -l {0}
       run: |
-        emsdk activate 3.1.45
-        source $CONDA_EMSDK_DIR/emsdk_env.sh
+        ./emsdk/emsdk activate ${{matrix.emsdk_ver}}
+         source ./emsdk/emsdk_env.sh
         micromamba create -f environment-wasm.yml --platform=emscripten-wasm32
 
-        export EMPACK_PREFIX=$MAMBA_ROOT_PREFIX/envs/CppInterOp-wasm-build
         export PREFIX=$MAMBA_ROOT_PREFIX/envs/CppInterOp-wasm
         export CMAKE_PREFIX_PATH=$PREFIX
         export CMAKE_SYSTEM_PREFIX_PATH=$PREFIX
@@ -1320,14 +1303,13 @@ jobs:
     - name: Build xeus-cpp
       shell: bash -l {0}
       run: |
-        emsdk activate 3.1.45
-        source $CONDA_EMSDK_DIR/emsdk_env.sh
+        ./emsdk/emsdk activate ${{matrix.emsdk_ver}}
+         source ./emsdk/emsdk_env.sh
         micromamba activate CppInterOp-wasm  
         git clone https://github.com/compiler-research/xeus-cpp.git
         cd ./xeus-cpp
         mkdir build
         pushd build
-        export EMPACK_PREFIX=$MAMBA_ROOT_PREFIX/envs/CppInterOp-wasm-build
         export CMAKE_PREFIX_PATH=${{ env.PREFIX }} 
         export CMAKE_SYSTEM_PREFIX_PATH=${{ env.PREFIX }} 
         emcmake cmake \
