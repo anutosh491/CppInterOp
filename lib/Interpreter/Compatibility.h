@@ -97,12 +97,17 @@ namespace Cpp_utils = cling::utils;
 
 namespace compat {
 
-using Interpreter = cling::Interpreter;
+class WrappedInterpreter : public cling::Interpreter {
+public:
+  using cling::Interpreter::Interpreter;
 
-inline std::unique_ptr<Interpreter>
-create(int argc, const char* const* argv) {
-  return std::make_unique<Interpreter>(argc, argv);
-}
+  static std::unique_ptr<WrappedInterpreter>
+  create(int argc, const char* const* argv) {
+    return std::make_unique<WrappedInterpreter>(argc, argv);
+  }
+};
+
+using Interpreter = WrappedInterpreter;
 
 inline void maybeMangleDeclName(const clang::GlobalDecl& GD,
                                 std::string& mangledName) {
