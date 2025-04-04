@@ -2957,9 +2957,14 @@ namespace Cpp {
                    std::back_inserter(ClingArgv),
                    [&](const std::string& str) { return str.c_str(); });
 
-    auto I = compat::Interpreter::create(ClingArgv.size(), &ClingArgv[0]);
-    if (!I)
+#ifdef CPPINTEROP_USE_CLING
+    auto I = new compat::Interpreter(ClingArgv.size(), &ClingArgv[0]);
+#else
+    auto Interp = compat::Interpreter::create(ClingArgv.size(), &ClingArgv[0]);
+    if (!Interp)
       return nullptr;
+    auto I = Interp.release();
+#endif
 
     // Honor -mllvm.
     //
@@ -2978,8 +2983,8 @@ namespace Cpp {
     // FIXME: Enable this assert once we figure out how to fix the multiple
     // calls to CreateInterpreter.
     //assert(!sInterpreter && "Interpreter already set.");
-    sInterpreter = I.get();
-    return static_cast<TInterp_t>(I.release());
+    sInterpreter = I;
+    return I;
   }
 
   TInterp_t GetInterpreter() { return sInterpreter; }
