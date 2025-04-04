@@ -156,8 +156,7 @@ public:
     vargs.push_back("new");
     auto CI = compat::createClangInterpreter(vargs);
     if (!CI) {
-      llvm::logAllUnhandledErrors(CI.takeError(), llvm::errs(),
-                                  "Interpreter creation failed: ");
+      llvm::errs() << "Interpreter creation failed\n";
       return nullptr;
     }
 
