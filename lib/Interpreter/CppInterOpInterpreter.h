@@ -160,7 +160,7 @@ public:
       return nullptr;
     }
 
-    return std::make_unique<Interpreter>(std::move(*CI));
+    return std::make_unique<Interpreter>(std::move(CI));
   }
 
   ~Interpreter() {}
