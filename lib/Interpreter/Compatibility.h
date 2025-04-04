@@ -91,6 +91,8 @@ static inline char* GetEnv(const char* Var_Name) {
 
 #include <regex>
 
+static const void* clingInterpreterTypeinfoAnchor = &typeid(cling::Interpreter);
+
 namespace Cpp {
 namespace Cpp_utils = cling::utils;
 }
