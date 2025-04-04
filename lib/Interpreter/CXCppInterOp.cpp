@@ -272,6 +272,9 @@ static inline compat::Interpreter* getInterpreter(const CXInterpreterImpl* I) {
 
 CXInterpreter clang_createInterpreter(const char* const* argv, int argc) {
   auto* I = new CXInterpreterImpl(); // NOLINT(*-owning-memory)
+#ifdef CPPINTEROP_USE_CLING
+  I->Interp = std::make_unique<compat::Interpreter>(argc, argv);
+#else
   I->Interp = compat::Interpreter::create(argc, argv);
   if (!I->Interp) {
     delete I;
