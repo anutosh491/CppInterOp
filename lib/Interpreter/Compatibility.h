@@ -99,6 +99,11 @@ namespace compat {
 
 using Interpreter = cling::Interpreter;
 
+inline std::unique_ptr<Interpreter>
+create(int argc, const char* const* argv) {
+  return std::make_unique<Interpreter>(argc, argv);
+}
+
 inline void maybeMangleDeclName(const clang::GlobalDecl& GD,
                                 std::string& mangledName) {
   cling::utils::Analyze::maybeMangleDeclName(GD, mangledName);
