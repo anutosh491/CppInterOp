@@ -2957,29 +2957,29 @@ namespace Cpp {
                    std::back_inserter(ClingArgv),
                    [&](const std::string& str) { return str.c_str(); });
 
-    auto I = new compat::Interpreter(ClingArgv.size(), &ClingArgv[0]);
+    auto I = compat::Interpreter::create(ClingArgv.size(), &ClingArgv[0]);
+    if (!I)
+      return nullptr;
 
     // Honor -mllvm.
     //
     // FIXME: Remove this, one day.
     // This should happen AFTER plugins have been loaded!
-    if (I && I->getCI()) {
-      const CompilerInstance* Clang = I->getCI();
-      if (!Clang->getFrontendOpts().LLVMArgs.empty()) {
-        unsigned NumArgs = Clang->getFrontendOpts().LLVMArgs.size();
-        auto Args = std::make_unique<const char*[]>(NumArgs + 2);
-        Args[0] = "clang (LLVM option parsing)";
-        for (unsigned i = 0; i != NumArgs; ++i)
-          Args[i + 1] = Clang->getFrontendOpts().LLVMArgs[i].c_str();
-        Args[NumArgs + 1] = nullptr;
-        llvm::cl::ParseCommandLineOptions(NumArgs + 1, Args.get());
-      }
+    const CompilerInstance* Clang = I->getCI();
+    if (!Clang->getFrontendOpts().LLVMArgs.empty()) {
+      unsigned NumArgs = Clang->getFrontendOpts().LLVMArgs.size();
+      auto Args = std::make_unique<const char*[]>(NumArgs + 2);
+      Args[0] = "clang (LLVM option parsing)";
+      for (unsigned i = 0; i != NumArgs; ++i)
+        Args[i + 1] = Clang->getFrontendOpts().LLVMArgs[i].c_str();
+      Args[NumArgs + 1] = nullptr;
+      llvm::cl::ParseCommandLineOptions(NumArgs + 1, Args.get());
     }
     // FIXME: Enable this assert once we figure out how to fix the multiple
     // calls to CreateInterpreter.
     //assert(!sInterpreter && "Interpreter already set.");
-    sInterpreter = I;
-    return I;
+    sInterpreter = I.get();
+    return static_cast<TInterp_t>(I.release());
   }
 
   TInterp_t GetInterpreter() { return sInterpreter; }
