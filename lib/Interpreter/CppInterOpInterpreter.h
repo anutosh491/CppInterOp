@@ -136,8 +136,12 @@ class Interpreter {
 private:
   std::unique_ptr<clang::Interpreter> inner;
 
+  Interpreter(std::unique_ptr<clang::Interpreter> CI)
+  : inner(std::move(CI)) {}
+
 public:
-  Interpreter(int argc, const char* const* argv, const char* llvmdir = 0,
+  static std::unique_ptr<Interpreter>
+  create(int argc, const char* const* argv, const char* llvmdir = 0,
               const std::vector<std::shared_ptr<clang::ModuleFileExtension>>&
                   moduleExtensions = {},
               void* extraLibHandle = 0, bool noRuntime = true) {
@@ -150,7 +154,14 @@ public:
     std::vector<const char*> vargs(argv + 1, argv + argc);
     vargs.push_back("-include");
     vargs.push_back("new");
-    inner = compat::createClangInterpreter(vargs);
+    auto CI = compat::createClangInterpreter(vargs);
+    if (!CI) {
+      llvm::logAllUnhandledErrors(CI.takeError(), llvm::errs(),
+                                  "Interpreter creation failed: ");
+      return nullptr;
+    }
+
+    return std::make_unique<Interpreter>(std::move(*CI));
   }
 
   ~Interpreter() {}
