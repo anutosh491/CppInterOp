@@ -280,6 +280,7 @@ CXInterpreter clang_createInterpreter(const char* const* argv, int argc) {
     delete I;
     return nullptr;
   }
+#endif
   // create a bridge between CXTranslationUnit and clang::Interpreter
   // auto AU = std::make_unique<ASTUnit>(false);
   // AU->FileMgr = I->Interp->getCompilerInstance().getFileManager();
