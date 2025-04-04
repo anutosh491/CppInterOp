@@ -272,7 +272,11 @@ static inline compat::Interpreter* getInterpreter(const CXInterpreterImpl* I) {
 
 CXInterpreter clang_createInterpreter(const char* const* argv, int argc) {
   auto* I = new CXInterpreterImpl(); // NOLINT(*-owning-memory)
-  I->Interp = std::make_unique<compat::Interpreter>(argc, argv);
+  I->Interp = compat::Interpreter::create(argc, argv);
+  if (!I->Interp) {
+    delete I;
+    return nullptr;
+  }
   // create a bridge between CXTranslationUnit and clang::Interpreter
   // auto AU = std::make_unique<ASTUnit>(false);
   // AU->FileMgr = I->Interp->getCompilerInstance().getFileManager();
