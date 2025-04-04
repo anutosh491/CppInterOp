@@ -2957,7 +2957,14 @@ namespace Cpp {
                    std::back_inserter(ClingArgv),
                    [&](const std::string& str) { return str.c_str(); });
 
+#ifdef CPPINTEROP_USE_CLING
     auto I = new compat::Interpreter(ClingArgv.size(), &ClingArgv[0]);
+#else
+    auto Interp = compat::Interpreter::create(ClingArgv.size(), &ClingArgv[0]);
+    if (!Interp)
+      return nullptr;
+    auto I = Interp.release();
+#endif
 
     // Honor -mllvm.
     //
