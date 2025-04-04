@@ -91,25 +91,13 @@ static inline char* GetEnv(const char* Var_Name) {
 
 #include <regex>
 
-static const void* clingInterpreterTypeinfoAnchor = &typeid(cling::Interpreter);
-
 namespace Cpp {
 namespace Cpp_utils = cling::utils;
 }
 
 namespace compat {
 
-class WrappedInterpreter : public cling::Interpreter {
-public:
-  using cling::Interpreter::Interpreter;
-
-  static std::unique_ptr<WrappedInterpreter>
-  create(int argc, const char* const* argv) {
-    return std::make_unique<WrappedInterpreter>(argc, argv);
-  }
-};
-
-using Interpreter = WrappedInterpreter;
+using Interpreter = cling::Interpreter;
 
 inline void maybeMangleDeclName(const clang::GlobalDecl& GD,
                                 std::string& mangledName) {
