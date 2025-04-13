@@ -152,8 +152,8 @@ public:
     llvm::InitializeAllAsmPrinters();
 
     std::vector<const char*> vargs(argv + 1, argv + argc);
-    vargs.push_back("-include");
-    vargs.push_back("new");
+    // vargs.push_back("-include");
+    // vargs.push_back("new");
     auto CI = compat::createClangInterpreter(vargs);
     if (!CI) {
       llvm::errs() << "Interpreter creation failed\n";
