@@ -1366,6 +1366,8 @@ TEST(FunctionReflectionTest, JitCallAdvanced) {
     GTEST_SKIP() << "XFAIL due to Valgrind report";
   std::vector<Decl*> Decls;
   std::string code = R"(
+      #include <new>
+      
       typedef struct _name {
         _name() { p[0] = (void*)0x1; p[1] = (void*)0x2; p[2] = (void*)0x3; }
         void* p[3];
