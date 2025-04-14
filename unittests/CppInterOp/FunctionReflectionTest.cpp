@@ -1365,6 +1365,10 @@ TEST(FunctionReflectionTest, JitCallAdvanced) {
   if (llvm::sys::RunningOnValgrind())
     GTEST_SKIP() << "XFAIL due to Valgrind report";
   std::vector<Decl*> Decls;
+  std::vector<const char*> args = {
+    "-include",
+    "new"
+  };
   std::string code = R"(
       typedef struct _name {
         _name() { p[0] = (void*)0x1; p[1] = (void*)0x2; p[2] = (void*)0x3; }
@@ -1372,7 +1376,7 @@ TEST(FunctionReflectionTest, JitCallAdvanced) {
       } name;
     )";
 
-  GetAllTopLevelDecls(code, Decls);
+  GetAllTopLevelDecls(code, Decls, false, args);
   auto *CtorD
     = (clang::CXXConstructorDecl*)Cpp::GetDefaultConstructor(Decls[0]);
   auto Ctor = Cpp::MakeFunctionCallable(CtorD);
