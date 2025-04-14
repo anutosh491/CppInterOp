@@ -1365,7 +1365,7 @@ TEST(FunctionReflectionTest, JitCallAdvanced) {
   if (llvm::sys::RunningOnValgrind())
     GTEST_SKIP() << "XFAIL due to Valgrind report";
   std::vector<Decl*> Decls;
-  std::vector<const char*> args = {
+  std::vector<const char*> interpreter_args = {
     "-include",
     "new"
   };
@@ -1376,7 +1376,7 @@ TEST(FunctionReflectionTest, JitCallAdvanced) {
       } name;
     )";
 
-  GetAllTopLevelDecls(code, Decls, false, args);
+  GetAllTopLevelDecls(code, Decls, false, interpreter_args);
   auto *CtorD
     = (clang::CXXConstructorDecl*)Cpp::GetDefaultConstructor(Decls[0]);
   auto Ctor = Cpp::MakeFunctionCallable(CtorD);
@@ -1410,7 +1410,7 @@ TEST(FunctionReflectionTest, GetFunctionCallWrapper) {
   GTEST_SKIP() << "Disabled, invoking functions containing printf does not work with Cling on Windows";
 #endif
   std::vector<Decl*> Decls;
-  std::vector<const char*> args = {
+  std::vector<const char*> interpreter_args = {
     "-include",
     "new"
   };
@@ -1418,7 +1418,7 @@ TEST(FunctionReflectionTest, GetFunctionCallWrapper) {
     int f1(int i) { return i * i; }
     )";
 
-  GetAllTopLevelDecls(code, Decls, false, args);
+  GetAllTopLevelDecls(code, Decls, false, interpreter_args);
 
   Interp->process(R"(
     #include <string>
