@@ -22,7 +22,10 @@ void TestUtils::GetAllTopLevelDecls(const std::string& code,
                                     std::vector<Decl*>& Decls,
                                     bool filter_implicitGenerated /* = false */,
                                     const std::vector<const char*>& interpreter_args /* = {} */) {
-  Cpp::CreateInterpreter(interpreter_args);
+  std::vector<const char*> args = {
+    "-include", "new"
+  };
+  Cpp::CreateInterpreter(args);
 #ifdef CPPINTEROP_USE_CLING
   cling::Transaction *T = nullptr;
   Interp->declare(code, &T);
