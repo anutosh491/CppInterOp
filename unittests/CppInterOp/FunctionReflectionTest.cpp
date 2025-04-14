@@ -1410,11 +1410,15 @@ TEST(FunctionReflectionTest, GetFunctionCallWrapper) {
   GTEST_SKIP() << "Disabled, invoking functions containing printf does not work with Cling on Windows";
 #endif
   std::vector<Decl*> Decls;
+  std::vector<const char*> args = {
+    "-include",
+    "new"
+  };
   std::string code = R"(
     int f1(int i) { return i * i; }
     )";
 
-  GetAllTopLevelDecls(code, Decls);
+  GetAllTopLevelDecls(code, Decls, false, args);
 
   Interp->process(R"(
     #include <string>
