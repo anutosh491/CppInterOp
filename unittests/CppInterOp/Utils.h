@@ -17,8 +17,10 @@ namespace clang {
 }
 #define Interp (static_cast<compat::Interpreter*>(Cpp::GetInterpreter()))
 namespace TestUtils {
-  void GetAllTopLevelDecls(const std::string& code, std::vector<clang::Decl*>& Decls,
-                           bool filter_implicitGenerated = false);
+  void GetAllTopLevelDecls(const std::string& code,
+                          std::vector<clang::Decl*>& Decls,
+                          bool filter_implicitGenerated = false,
+                          const std::vector<const char*>& interpreter_args = {});
   void GetAllSubDecls(clang::Decl *D, std::vector<clang::Decl*>& SubDecls,
                       bool filter_implicitGenerated = false);
 } // end namespace TestUtils
